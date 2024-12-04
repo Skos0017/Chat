@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Вход</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="./styles/styles.css">
+        <link rel="stylesheet" href="./styles/fonts.css">
+    </head>
+    <body>
+        <div class="login-container">
+            <h2>Вход</h2>
+            <form id="loginForm">
+                <input class="form_input" type="text" id="login" name="login" placeholder="Login" required>
+                <input class="form_input" type="password" id="password" name="password" placeholder="Password" required>
+                <button type="submit" id="open">Войти</button>
+                
+            </form>
+            <a href="http://localhost:3000/registration-page" class="register-link">Зарегистрироваться</a>
+        </div>
+        <div class="error-message" id="errorMessage"></div>
+        <script src="../script/script.js" async defer></script>
+    </body>
+</html>

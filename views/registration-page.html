@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="./styles/styles.css">
+        <link rel="stylesheet" href="../styles/fonts.css">
+    </head>
+    <body>
+        <div class="registration-container">
+            <h2>Регистрация</h2>
+            <form action="http://localhost:3000/registration" method="POST">
+              <input class="form_input firstname login" type="login" id="login" name="user[login]" placeholder="login" required>
+                <input class="form_input firstname" type="text" id="firstname" name="user[firstname]" placeholder="Имя" required>
+                <input class="form_input lastname" type="text" id="lastname" name="user[lastname]" placeholder="Фамилия" required>
+                <input class="form_input email" type="email" id="email" name="user[email]" placeholder="Email" required>
+                <input class="form_input password" type="password" id="password" name="user[password]" placeholder="Password" required>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+        </div>
+        <script src="../script/script.js" async defer></script>
+    </body>
+</html>

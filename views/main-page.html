@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>message</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="./styles/styles.css">
+        <link rel="stylesheet" href="./styles/fonts.css">
+    </head>
+    <body>
+        <div class="list">   
+            <!-- Пользователи -->  
+            <div class="list_user">
+                <h1>Список пользователей</h1>
+                <div class="list_user_id">
+                    <ul class="user-list" id="userList">
+                        <!-- Здесь будут пользователи -->
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Заголовок -->
+            <div class="message_div">
+                <h2 class="message_div_h2">Сообщения</h2>  
+                <!-- Окно для сообщений -->
+                <div class="message_area">
+                    <div class="message_list" id="messageList">
+                        <ul id="message-log"></ul>
+                    </div>
+                    <textarea placeholder="Введите ваше сообщение..." rows="4" id="message-area"></textarea>
+
+                    <button type="button" class="input_BTN"  id="send">Отправить</button>
+                    <button type="button" class="input_BTN" id="close">Закрыть чат</button>
+                </div>
+            </div>
+        </div>
+        <script src="../script/script.js" async defer></script>
+    </body>
+</html>
