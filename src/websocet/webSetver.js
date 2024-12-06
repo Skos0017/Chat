@@ -9,7 +9,7 @@ app.use(express.static(__dirname + '/public'));
 
 // Обрабатываем GET запрос на корневой путь
 app.get('/', function(req, res) {
-  res.sendFile(__dirname + '/views/main-page.html'); // Отправляем файл index.html в ответ на запрос
+  res.sendFile(__dirname + '../../views/main-page.html'); // Отправляем файл index.html в ответ на запрос
 });
 
 let WebSocketServer = require('websocket').server; // Импортируем WebSocket сервер
