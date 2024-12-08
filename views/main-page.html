@@ -6,11 +6,12 @@
         <title>message</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="./styles/styles.css">
-        <link rel="stylesheet" href="./styles/fonts.css">
+        <link rel="stylesheet" href="/styles/styles.css">
+        <link rel="stylesheet" href="/styles/fonts.css">
     </head>
     <body>
         <div class="list">   
+
             <!-- Пользователи -->  
             <div class="list_user">
                 <h1>Список пользователей</h1>
@@ -18,9 +19,12 @@
                     <ul class="user-list" id="userList">
                         <!-- Здесь будут пользователи -->
                     </ul>
+
+                    <p id="status"></p>
+                    <button type="button" class="input_BTN" id="close">Закрыть чат</button>
                 </div>
             </div>
-            
+
             <!-- Заголовок -->
             <div class="message_div">
                 <h2 class="message_div_h2">Сообщения</h2>  
@@ -31,11 +35,12 @@
                     </div>
                     <textarea placeholder="Введите ваше сообщение..." rows="4" id="message-area"></textarea>
 
+                    
                     <button type="button" class="input_BTN"  id="send">Отправить</button>
-                    <button type="button" class="input_BTN" id="close">Закрыть чат</button>
+                    
                 </div>
             </div>
         </div>
-        <script src="../script/script.js" async defer></script>
+        <script src="/script/websocket.js"></script>
     </body>
 </html>

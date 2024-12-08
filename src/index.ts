@@ -1,97 +1,116 @@
 import express, { Request, Response, NextFunction } from 'express';
-import cookieParser  from 'cookie-parser';
+import cookieParser from 'cookie-parser';
+import * as http from 'http';
+import { WebSocketServer } from 'ws';
+// Lib
 import { readFilePromise, writeFilePromise } from './file-operator_module';
 import { User } from './User';
-import {CookieCheck} from './middlewares/CookieCheck';
-import { reg } from './routes/registrationPage';
+import { CheckRegisteredUser } from './middlewares/CheckRegisteredUser';
+import { CookieCheckAdmin } from './middlewares/CookieCheckAdmin';
+import { CookieCheckPublic } from './middlewares/CookieCheckPublic';
+import { sendPageHTML } from './routes/registrationPage';
+import { LogRequest } from './middlewares/LogRequest';
+import { SetupWebSocket } from './websocket/server';
 
+// ENV
+const WS_PORT = process.env.WS_PORT || 8888; // Устанавливаем порт, используем переменную 
 
-export const app = express();
+// Const
+const userDataJson = "/../userData.json"
 const cookieName = 'Token';
 let registratedUsers: User[] = [];
-app.use(express.static('views'));
-app.use(express.static('script'));
-const userDataJson = "/../userData.json"
+let wsClients = {}; // Объект для хранения подключенных клиентов в WebSocket
 
+// Express
+const app = express();
+
+// Создаём просто HTTP сервер
+const server = http.createServer(app);
+
+// Создаем экземпляр WebSocket сервера, привязывая его к HTTP серверу
+const wss = new WebSocketServer({
+    server: server,
+});
+// Настраиваем WebSocket server
+SetupWebSocket(wss)
+
+// ------------------------------------------
+// APP - express
+// ------------------------------------------
+app.use(express.static('public')); // Статичные файлы (JS || CSS || Картинки) находятся в этой папке
 app.use(cookieParser());
 app.use(express.json()); // Готов принять JSON
 app.use(express.urlencoded({ extended: true })); // Укажите для обработки URL-encoded форм
+app.use(LogRequest()); // Выодит информацию о запросе
 
- app.use(CookieCheck(registratedUsers));
+// ------------------------------------------
+// Admin
+// ------------------------------------------
+app.get('/', CookieCheckAdmin(registratedUsers), sendPageHTML("main-page"));
+app.get('/main-page', CookieCheckAdmin(registratedUsers), sendPageHTML("main-page"));
+app.get('/users', CookieCheckAdmin(registratedUsers), sendPageHTML("main-page"));
 
-// Перенаправление запросов
-app.get('/:pageName', reg);
-
-function checkRegisteredUsers(req: Request, res: Response, next: NextFunction) {
-    let user: User = new User(req.body.user);
-    
-    if (!req.body.user) {
-        res.status(404).send('Ошибка запроса')
-        return;
-    }
-
-    let findUserByEmail = registratedUsers.find(registratedUser => registratedUser.email === user.email)
-
-    if (findUserByEmail) {
-        res.status(401).send('Пользователь с таким email уже зарегистрирован');
-        return;
-    }
-    next();
-}
+// ------------------------------------------
+// Public
+// ------------------------------------------
+app.get('/login', CookieCheckPublic(registratedUsers), sendPageHTML("enter-page"));
+app.get('/enter-page', CookieCheckPublic(registratedUsers), sendPageHTML("enter-page"));
+app.get('/registration', CookieCheckPublic(registratedUsers), sendPageHTML("registration-page"));
+app.get('/registration-page', CookieCheckPublic(registratedUsers), sendPageHTML("registration-page"));
 
 
 export function readTemplate(fileName: string): Promise<string> {
     return new Promise((resolve, reject) => {
         readFilePromise(fileName)
             // resolve
-            .then(function(data: string) {
+            .then(function (data: string) {
                 resolve(data);
             })
             // reject
-            .catch(function(err) {
+            .catch(function (err) {
                 console.log("Не смоглим прочитать файл: ", err);
             });
     });
 }
 
-app.post('/login',checkRegisteredUsers, function(req: Request, res: Response) {
+app.post('/login', CheckRegisteredUser(registratedUsers), function (req: Request, res: Response) {
     // {user: {login,password}}
-    let {login, password} = req.body.user;
+    let { login, password } = req.body.user;
 
     readFilePromise(userDataJson)
-    .then(function (dataUsers: string) {
-        let users: User[] = JSON.parse(dataUsers);
-        let userLogin: User | undefined;
+        .then(function (dataUsers: string) {
+            let users: User[] = JSON.parse(dataUsers);
+            let userLogin: User | undefined;
 
-        userLogin = users.find((value) => {
-            return value.username === login
+            userLogin = users.find((value) => {
+                return value.username === login
+            })
+
+            if (userLogin === undefined) {
+                res.status(404);
+                res.json({ "message": "Пользователь не найден" });
+                return;
+            }
+
+            if (userLogin.password != password) {
+                res.status(404);
+                res.json({ "message": "Логин или Пароль не правельные" });
+                return;
+            }
+
+            res.status(201)
+                .cookie('Token', userLogin.token, { httpOnly: true })
+            res.json({ "message": '' });
+
+
         })
-
-        if(userLogin === undefined){
-            res.status(404);
-            res.json({"message": "Пользователь не найден"});
-            return;
-        }
-
-        if(userLogin.password != password){
-            res.status(404);
-            res.json({"message": "Логин или Пароль не правельные"});
-            return;
-        }
-       
-        res.status(201)
-        .cookie('Token', userLogin.token, { httpOnly: true })
-        res.json({"message": ''});
-       
-
-    })
 })
 
-app.post('/registration', checkRegisteredUsers, (req: Request, res: Response) => {
+app.post('/registration', CheckRegisteredUser(registratedUsers), (req: Request, res: Response) => {
     // {user: {'Name': 'Kas'}}
     let newUser: User = new User(req.body.user);
 
-        readFilePromise(userDataJson)
+    readFilePromise(userDataJson)
         .then(dataUsers => {
             let users: User[] = JSON.parse(dataUsers);
             users.push(newUser);
@@ -131,6 +150,10 @@ function generateToken(length: cookieLength = 128, countSymbolsInBucket: number 
     return token;
 }
 
+// стартуем WS сервер
+server.listen(WS_PORT, () => {
+    console.log(`Server started on port ${WS_PORT} :)`);
+});
 
 app.listen(3000, () => {
     readFilePromise(userDataJson)

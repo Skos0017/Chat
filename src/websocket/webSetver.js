@@ -1,3 +1,11 @@
+import express, { Request, Response, NextFunction } from 'express';
+import cookieParser  from 'cookie-parser';
+import { readFilePromise, writeFilePromise } from '../file-operator_module';
+import { User } from '../User';
+import {CookieCheck} from '../middlewares/CookieCheck';
+import { reg } from './routes/registrationPage';
+
+
 const PORT = process.env.PORT || 3001; // Устанавливаем порт, используем переменную окружения или 3001
 const express = require('express'); // Импортируем библиотеку express
 const app = express(); // Создаем экземпляр приложения express
@@ -8,9 +16,7 @@ let server = require('http').Server(app); // Создаем HTTP сервер н
 app.use(express.static(__dirname + '/public'));
 
 // Обрабатываем GET запрос на корневой путь
-app.get('/', function(req, res) {
-  res.sendFile(__dirname + '../../views/main-page.html'); // Отправляем файл index.html в ответ на запрос
-});
+app.get('/:pageName', reg);
 
 let WebSocketServer = require('websocket').server; // Импортируем WebSocket сервер
 
