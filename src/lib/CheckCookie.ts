@@ -1,4 +1,4 @@
-import { User } from '../User'
+import { User } from '../models/User'
 
 export function CheckCookie(registratedUsers: User[], cookieHeader: string | undefined): boolean {
         if (!cookieHeader) {

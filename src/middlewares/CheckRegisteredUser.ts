@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../User';
+import { User } from '../models/User';
 
 export function CheckRegisteredUser(registratedUsers: User[]) {
     return function (req: Request, res: Response, next: NextFunction) {

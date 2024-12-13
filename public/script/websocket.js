@@ -79,12 +79,10 @@ window.onload = function () {
         break;
       case "message":
         messageList.innerHTML +=
-          '<li class="received"><span>Получено: ' +
+          '<li class="received"> <span>Получено: ' +
           // Добавляем полученное сообщение в список
           timeStr +
-          "</span>" +
-          msg.text +
-          "</li>";
+          "</span>" +  msg.text +"</li>";
         break;
     }
   };
