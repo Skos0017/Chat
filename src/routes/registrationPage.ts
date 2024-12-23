@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import { readTemplate } from './templateReader';
 
 
-const viewsDir = "/../views/";
+const viewsDir = "./views";
 
 export function sendPageHTML(htmlPage: string): RequestHandler {
     return function (req: Request, res: Response) {
